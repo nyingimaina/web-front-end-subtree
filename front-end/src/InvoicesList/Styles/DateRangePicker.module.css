@@ -1,0 +1,45 @@
+.dateRangePickerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  max-width: 400px;
+}
+
+.dateRangePickerLabel {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.dateRangePickerInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.datePickerInput {
+  padding: 10px;
+  font-size: 14px;
+  border: none; /* Removed border */
+  border-radius: 4px;
+  background-color: #f0f0f0; /* Subtle background */
+  transition: background-color 0.3s ease;
+}
+
+.datePickerInput:focus {
+  background-color: #e0e0e0; /* Subtle focus effect */
+  outline: none;
+}
+
+@media (min-width: 768px) {
+  .dateRangePickerInputs {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .datePickerInput {
+    flex: 1;
+  }
+}

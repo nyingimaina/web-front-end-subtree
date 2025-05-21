@@ -1,0 +1,66 @@
+.navbarCustom {
+  background-color: var(--color-white);
+  padding: 0 calc(1.5rem / 2) 0 0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 106px;
+  z-index: 1001;
+  border-bottom: solid 1px #dfdfdf;
+  /* box-shadow: 0 4px 8px 0 rgba(1, 1, 1, 0.12); */
+}
+
+.container {
+  margin-left: 12px;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-right: 130px;
+}
+
+.menuButton {
+  font-size: 30px;
+  cursor: pointer;
+  color: var(--color-link);
+}
+.logoBox {
+  padding-top: 20px;
+  width: auto;
+  height: 106px;
+  line-height: 106px;
+  float: left;
+  transition: all 0.1s ease-out;
+  background-color: transparent;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+.title {
+  font-size: 30px;
+  margin-top: -53px;
+}
+
+.logo {
+  display: block;
+}
+
+.navbarCustom .logoLight {
+  display: none;
+}
+
+.logoBox .logoLight {
+  display: block;
+}
+
+.logo span.logoLg {
+  display: block;
+}
+
+.searchBox {
+  display: flex;
+  gap: 7.5px;
+  align-items: center;
+}

@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.container > * {
+  flex-grow: 1;
+  max-width: 50%;
+}
+
+@media (max-width: 600px) {
+  .container > * {
+    max-width: 100%;
+  }
+}

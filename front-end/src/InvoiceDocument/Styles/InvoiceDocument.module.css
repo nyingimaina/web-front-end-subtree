@@ -1,0 +1,245 @@
+.billContainer {
+  font-family: "Arial", sans-serif;
+  color: #333;
+  padding: 20px;
+  width: 794px; /* A4 width */
+  min-height: 1123px; /* A4 height */
+  background: white;
+  margin: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow-wrap: break-word; /* Prevents text overflow */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #007bff;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section h2 {
+  font-size: 18px;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+/* Table Styles */
+.table {
+  width: 100%;
+  max-width: 794px;
+  border-collapse: collapse;
+  border: 1px solid black;
+  margin-top: 15px;
+  table-layout: auto; /* Allow columns to adapt to content */
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px;
+  border: 1px solid black !important;
+  overflow: hidden;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* Set specific column widths */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  width: auto; /* Item description - takes remaining space */
+  min-width: 200px; /* Ensure minimum readable width */
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 80px; /* Quantity - fixed small width */
+  min-width: 80px;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3),
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  width: 120px; /* Cost and Total - fixed medium width */
+  min-width: 120px;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 18px;
+  color: #007bff;
+  background-color: #f9f9f9;
+}
+
+.centerer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 16px;
+  background-color: #ffffff;
+  max-width: 850px;
+  margin: auto;
+}
+
+.downloadButton {
+  align-self: flex-start;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.downloadButton:hover {
+  background-color: #0056b3;
+}
+
+.rightAlign {
+  text-align: right;
+}
+
+/* Footer Styles */
+.footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 30px;
+  border-top: 2px solid #007bff;
+}
+
+.footerContent {
+  color: #555;
+}
+
+.thankYou {
+  font-size: 20px;
+  color: #007bff;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.paymentInfo {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.paymentTerms {
+  flex: 1;
+}
+
+.paymentTerms h3 {
+  color: #007bff;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.paymentTerms ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.paymentTerms li {
+  margin-bottom: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+.footerNote {
+  flex: 1;
+  font-style: italic;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Print-specific styles */
+@media print {
+  .billContainer {
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    width: 794px;
+    min-height: 1123px;
+  }
+
+  .header {
+    width: 700px !important;
+  }
+
+  .table {
+    max-width: 700px !important;
+    width: 700px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Maintain column proportions in print */
+  .table th:nth-child(1),
+  .table td:nth-child(1) {
+    width: 340px; /* ~50% of 700px minus other columns */
+  }
+
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    width: 80px;
+  }
+
+  .table th:nth-child(3),
+  .table td:nth-child(3),
+  .table th:nth-child(4),
+  .table td:nth-child(4) {
+    width: 120px;
+  }
+
+  .table th,
+  .table td {
+    border: 0.1px solid black !important;
+    box-shadow: inset 0 0 0 0.3px black !important;
+    margin: 0 !important;
+  }
+
+  .table tr {
+    page-break-inside: avoid;
+  }
+
+  .section {
+    page-break-inside: avoid;
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 0;
+    width: 700px;
+    background: white;
+    margin-bottom: 30px;
+  }
+}

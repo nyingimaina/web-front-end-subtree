@@ -1,0 +1,6 @@
+/* Add styles specific to the UnreleasedPropManUnitContact component here */
+.container {
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}

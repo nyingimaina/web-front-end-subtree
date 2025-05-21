@@ -1,0 +1,87 @@
+.withSubMenuItemsContainer {
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Ensures subMenuItems are positioned relative to this container */
+}
+
+.withSubMenuItemsContainer .subMenuItem {
+  position: absolute;
+  left: -170px;
+  opacity: 0; /* Initially fully transparent */
+  visibility: hidden; /* Initially hidden */
+  pointer-events: none; /* Disable interaction when invisible */
+  transition: opacity 0.3s ease-in-out, visibility 0s 0.3s; /* Smooth opacity transition */
+  border-bottom: 1px solid #dfdfdf;
+}
+
+.withSubMenuItemsContainer:hover .subMenuItem {
+  opacity: 1; /* Fully visible */
+  visibility: visible; /* Element becomes visible */
+  pointer-events: auto; /* Enable interaction when visible */
+  transition: opacity 0.3s ease-in-out, visibility 0s; /* Visibility immediately when opacity changes */
+}
+
+.labelAndDownArrow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 70px;
+  gap: 20px;
+  align-items: center;
+  padding: 15px;
+  height: 55px; /* Explicitly set height for consistency */
+  overflow: hidden; /* Hide overflowing children when not hovered */
+  transition: width 0.3s ease-in, background-color 0.3s ease-in,
+    box-shadow 0.3s ease-in; /* Smooth transitions */
+  cursor: pointer;
+  position: relative; /* Ensure that z-index can be applied */
+  border: 1px solid transparent;
+}
+
+.container:hover,
+.container.open {
+  width: 260px;
+  overflow: visible; /* Show all children */
+  background-color: #f5f5f5;
+  color: var(--color-link);
+  box-shadow: 0px 0px 5px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid #dfdfdf;
+  transition: width 0.3s ease-in, background-color 0.3s ease-in; /* Smooth transitions */
+}
+
+.container.open {
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.container.open:hover {
+  background-color: #f5f5f5;
+}
+
+.container:first-child {
+  margin-top: 15px; /* Consistent margin for the first container */
+}
+
+.container > *:not(:first-child) {
+  opacity: 0; /* Hide all children except the first one */
+  visibility: hidden; /* Make them invisible */
+  pointer-events: none; /* Disable interaction */
+  transition: opacity 0.3s ease-in-out, visibility 0s 0.3s; /* Smooth transitions */
+}
+
+.container:hover > *,
+.container.open > * {
+  opacity: 1; /* Make all children visible */
+  visibility: visible; /* Make all children visible */
+  pointer-events: auto; /* Enable interaction */
+  transition: opacity 0.3s ease-in-out, visibility 0s; /* Smooth transition when showing children */
+  white-space: nowrap; /* Prevent line breaks */
+}

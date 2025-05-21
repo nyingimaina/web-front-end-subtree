@@ -1,0 +1,19 @@
+.textSuccess {
+  color: var(--color-success) !important;
+}
+
+.textSecondary {
+  color: var(--color-secondary) !important;
+}
+
+.title {
+  font-size: var(--font-body-1);
+  color: #4b5563;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.value {
+  color: var(--color-primary);
+  font-weight: 600;
+}

@@ -1,0 +1,25 @@
+.container {
+  width: 96vw;
+  padding: 5px;
+}
+
+.wideButton {
+  width: 220px;
+}
+
+.menuIcon {
+  font-size: 30px;
+}
+.menuIcon:hover {
+  color: var(--color-link);
+}
+.veryBottom {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+  border-top: salmon 1px dashed;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}

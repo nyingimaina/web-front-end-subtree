@@ -1,0 +1,14 @@
+.workspace {
+  padding: 5px;
+  width: 99%;
+  height: 100vh;
+  margin-left: 70px;
+  margin-top: 102px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: bold;
+  border-bottom: dashed 1px #ccc;
+  margin-bottom: 5px;
+}
