@@ -13,7 +13,9 @@ BOLD=$(tput bold)
 SUBTREE_PATH="front-end/src/web-front-end-subtree"
 REMOTE_NAME="web-front-end-subtree"
 REMOTE_URL="https://github.com/nyingimaina/web-front-end-subtree.git"
-REMOTE_BRANCH="master"
+
+REMOTE_PULL_BRANCH="master"    # branch to pull from
+REMOTE_PUSH_BRANCH="develop"   # branch to push to
 
 # 🔊 Cross-platform beep with fallback tones
 play_success_tone() {
@@ -37,7 +39,7 @@ play_error_tone() {
 }
 
 # 🎥 Text Animation Functions
-function typewriter() {
+typewriter() {
   for ((i=0; i<${#1}; i++)); do
     echo -n "${1:$i:1}"
     sleep 0.01
@@ -45,24 +47,24 @@ function typewriter() {
   echo ""
 }
 
-function scene_break() {
+scene_break() {
   clear
   echo -e "${CYN}"
-  for ((i=0; i<$(tput cols); i = i + 6)); do
+  for ((i=0; i<$(tput cols); i+=6)); do
     echo -n "######"
   done
   echo -e "\n${RST}"
   sleep 0.2
 }
 
-function pause_and_continue() {
+pause_and_continue() {
   echo -e "${YLW}"
   read -p "⏳ Press [Enter] to continue..." dummy
   echo -e "${RST}"
 }
 
 # 🧠 Ensure remote exists
-function ensure_remote() {
+ensure_remote() {
   if ! git remote | grep -q "$REMOTE_NAME"; then
     typewriter "${BLU}🔗 Adding remote '$REMOTE_NAME'...${RST}"
     git remote add "$REMOTE_NAME" "$REMOTE_URL"
@@ -74,99 +76,115 @@ function ensure_remote() {
   fi
 }
 
-# 📝 Check for uncommitted changes and optionally commit before continuing
-function check_and_commit_changes() {
+# 🧹 Check for uncommitted changes and offer commit before subtree ops
+check_dirty_and_prompt_commit() {
   if ! git diff-index --quiet HEAD --; then
-    echo -e "${YLW}⚠️  You have uncommitted changes:${RST}"
+    typewriter "${YLW}⚠️ You have uncommitted changes.${RST}"
     git status --short
-    echo -e "${YLW}Would you like to commit these changes before proceeding? (y/n)${RST}"
-    read -r answer
-    if [[ "$answer" =~ ^[Yy]$ ]]; then
-      read -p "Enter commit message: " commit_msg
-      git add -A
-      if git commit -m "$commit_msg"; then
-        play_success_tone
-        return 0  # proceed
-      else
-        play_error_tone
-        echo -e "${RED}❌ Commit failed. Aborting operation.${RST}"
-        return 1  # abort
-      fi
+    echo
+    while true; do
+      read -rp "Do you want to commit them first? (y/n): " yn
+      case $yn in
+        [Yy]* )
+          read -rp "Enter commit message: " msg
+          git add -A
+          if git commit -m "$msg"; then
+            play_success_tone
+            break
+          else
+            play_error_tone
+            typewriter "${RED}❌ Commit failed. Try again or cancel.${RST}"
+          fi
+          ;;
+        [Nn]* ) 
+          typewriter "${RED}❌ Operation cancelled due to uncommitted changes.${RST}"
+          play_error_tone
+          return 1
+          ;;
+        * ) typewriter "${YLW}Please answer y or n.${RST}" ;;
+      esac
+    done
+  fi
+  return 0
+}
+
+# 🧾 Checkout branch, create if missing
+checkout_branch() {
+  local branch=$1
+  if git show-ref --verify --quiet refs/heads/"$branch"; then
+    git checkout "$branch"
+  else
+    typewriter "${YLW}Branch '$branch' does not exist locally. Creating...${RST}"
+    if git checkout -b "$branch"; then
+      play_success_tone
     else
-      echo -e "${RED}❌ Operation cancelled by user.${RST}"
+      typewriter "${RED}❌ Failed to create branch '$branch'.${RST}"
       play_error_tone
-      return 1  # abort
+      exit 1
     fi
-  else
-    return 0  # no uncommitted changes, proceed
   fi
 }
 
-# 📥 Add subtree
-function add_subtree() {
-  if [ -d "$SUBTREE_PATH" ]; then
-    typewriter "${YLW}⚠️ Folder already exists: $SUBTREE_PATH${RST}"
-    choose_replace
-  fi
+# 🌲 Run subtree command: add/pull/push with branch + prefix + commit check + branch checkout
+run_subtree_cmd() {
+  local cmd=$1     # add | pull | push
+  local branch=$2  # branch to operate on
+  local extra_args=$3
 
   ensure_remote
-  scene_break
-  typewriter "${BLU}🌳 Adding subtree...${RST}"
-  if git subtree add --prefix="$SUBTREE_PATH" "$REMOTE_NAME" "$REMOTE_BRANCH" --squash; then
-    typewriter "${GRN}✅ Subtree added.${RST}"
-    play_success_tone
-  else
-    typewriter "${RED}❌ Failed to add subtree.${RST}"
-    play_error_tone
-  fi
-  pause_and_continue
-}
 
-# 🔁 Pull updates
-function pull_subtree() {
-  if ! check_and_commit_changes; then
-    return
-  fi
-  ensure_remote
-  scene_break
-  typewriter "${CYN}🔄 Pulling updates from subtree...${RST}"
-  if git subtree pull --prefix="$SUBTREE_PATH" "$REMOTE_NAME" "$REMOTE_BRANCH" --squash; then
-    typewriter "${GRN}✅ Pulled latest changes.${RST}"
-    play_success_tone
-  else
-    typewriter "${RED}❌ Failed to pull subtree changes.${RST}"
-    play_error_tone
-  fi
-  pause_and_continue
-}
+  # Checkout the branch first
+  checkout_branch "$branch" || return 1
 
-# 🚀 Push updates
-function push_subtree() {
-  if ! check_and_commit_changes; then
-    return
+  # For pull/push, check if repo is dirty before running subtree commands (add rarely needed)
+  if [[ "$cmd" != "add" ]]; then
+    check_dirty_and_prompt_commit || return 1
   fi
-  ensure_remote
-  scene_break
-  typewriter "${CYN}🚀 Pushing subtree changes to remote...${RST}"
-  if git subtree push --prefix="$SUBTREE_PATH" "$REMOTE_NAME" "$REMOTE_BRANCH"; then
-    typewriter "${GRN}✅ Changes pushed to remote.${RST}"
-    play_success_tone
-  else
-    typewriter "${RED}❌ Failed to push changes.${RST}"
-    play_error_tone
-  fi
-  pause_and_continue
-}
 
-# 🔄 Sync (pull + push)
-function sync_subtree() {
   scene_break
-  pull_subtree
-  push_subtree
+
+  case "$cmd" in
+    add)
+      typewriter "${BLU}🌳 Adding subtree on branch '$branch'...${RST}"
+      if git subtree add --prefix="$SUBTREE_PATH" "$REMOTE_NAME" "$branch" --squash $extra_args; then
+        typewriter "${GRN}✅ Subtree added on branch '$branch'.${RST}"
+        play_success_tone
+      else
+        typewriter "${RED}❌ Failed to add subtree on branch '$branch'.${RST}"
+        play_error_tone
+      fi
+      ;;
+    pull)
+      typewriter "${CYN}🔄 Pulling subtree updates from branch '$branch'...${RST}"
+      if git subtree pull --prefix="$SUBTREE_PATH" "$REMOTE_NAME" "$branch" --squash $extra_args; then
+        typewriter "${GRN}✅ Pulled latest subtree changes from '$branch'.${RST}"
+        play_success_tone
+      else
+        typewriter "${RED}❌ Failed to pull subtree changes from '$branch'.${RST}"
+        play_error_tone
+      fi
+      ;;
+    push)
+      typewriter "${CYN}🚀 Pushing subtree changes to remote branch '$branch'...${RST}"
+      if git subtree push --prefix="$SUBTREE_PATH" "$REMOTE_NAME" "$branch" $extra_args; then
+        typewriter "${GRN}✅ Changes pushed to remote branch '$branch'.${RST}"
+        play_success_tone
+      else
+        typewriter "${RED}❌ Failed to push changes to '$branch'.${RST}"
+        play_error_tone
+      fi
+      ;;
+    *)
+      typewriter "${RED}❌ Unknown subtree command: $cmd${RST}"
+      play_error_tone
+      return 1
+      ;;
+  esac
+  pause_and_continue
 }
 
 # 🧼 Handle replacement if folder exists
-function choose_replace() {
+choose_replace() {
   typewriter "${BLU}🤔 What should we do with the existing folder?${RST}"
   options=("📦 Backup & Replace" "💀 Force Delete" "❌ Cancel")
   select opt in "${options[@]}"; do
@@ -209,31 +227,54 @@ function choose_replace() {
 }
 
 # 🎮 Menu
-function show_menu() {
+show_menu() {
   while true; do
     scene_break
     echo -e "${CYN}${BOLD}==== SUBTREE MANAGER ====${RST}"
     echo -e "${YLW}Select an option using numbers or arrow keys:${RST}"
     options=(
       "➕ Add subtree"
-      "📥 Pull from subtree"
-      "🚀 Push to subtree"
+      "📥 Pull from master (pull branch)"
+      "🚀 Push to develop (push branch)"
       "🔄 Sync (pull + push)"
       "🧼 Re-add subtree (wipe or backup)"
       "❌ Exit"
     )
     select opt in "${options[@]}"; do
       case $REPLY in
-        1) add_subtree; break ;;
-        2) pull_subtree; break ;;
-        3) push_subtree; break ;;
-        4) sync_subtree; break ;;
-        5) add_subtree; break ;;
-        6) typewriter "${RED}👋 Exiting. Goodnight, Mr. Anderson...${RST}"; play_success_tone; exit 0 ;;
-        *) typewriter "${YLW}❓ Invalid option. Try again.${RST}"; play_error_tone ;;
+        1)
+          # If folder exists, ask what to do
+          if [ -d "$SUBTREE_PATH" ]; then
+            typewriter "${YLW}⚠️ Folder already exists: $SUBTREE_PATH${RST}"
+            choose_replace
+          fi
+          run_subtree_cmd add "$REMOTE_PULL_BRANCH"
+          break
+          ;;
+        2) run_subtree_cmd pull "$REMOTE_PULL_BRANCH" ;;
+        3) run_subtree_cmd push "$REMOTE_PUSH_BRANCH" ;;
+        4)
+          run_subtree_cmd pull "$REMOTE_PULL_BRANCH" && run_subtree_cmd push "$REMOTE_PUSH_BRANCH"
+          ;;
+        5)
+          if [ -d "$SUBTREE_PATH" ]; then
+            choose_replace
+          else
+            typewriter "${RED}No subtree folder to re-add.${RST}"
+          fi
+          run_subtree_cmd add "$REMOTE_PULL_BRANCH"
+          ;;
+        6)
+          typewriter "${GRN}Bye!${RST}"
+          exit 0
+          ;;
+        *)
+          typewriter "${YLW}Invalid option. Try again.${RST}"
+          ;;
       esac
     done
   done
 }
 
+# 🚀 Entry point
 show_menu

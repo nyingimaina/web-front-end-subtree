@@ -2,7 +2,7 @@ import ApiServiceBase from "@/ApiService/ApiServiceBase";
 import ICompany from "./ICompany";
 import IErrorResponse from "@/ApiService/IErrorResponse";
 import ApiService from "@/ApiService/ApiService";
-import IValidationResponse from "@/web-front-end-subtree/ValidationResponse/Data/IValidationResponse";
+import IValidationResponse from "@/ValidationResponse/Data/IValidationResponse";
 
 export default class CompanyApiService extends ApiServiceBase {
   protected route = "companies";

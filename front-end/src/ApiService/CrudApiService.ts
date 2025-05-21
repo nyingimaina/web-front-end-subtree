@@ -1,4 +1,4 @@
-import IValidationResponse from "@/web-front-end-subtree/ValidationResponse/Data/IValidationResponse";
+import IValidationResponse from "@/ValidationResponse/Data/IValidationResponse";
 import ApiServiceBase from "./ApiServiceBase";
 import ApiService from "./ApiService";
 
