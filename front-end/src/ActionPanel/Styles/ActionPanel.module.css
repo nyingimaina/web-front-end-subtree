@@ -1,9 +1,0 @@
-.actionPanel {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: flex-end;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 10px;
-}

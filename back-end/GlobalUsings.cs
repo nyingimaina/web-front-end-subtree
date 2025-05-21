@@ -1,1 +1,0 @@
-global using Jattac.Apps.CompanyMan.Database;
