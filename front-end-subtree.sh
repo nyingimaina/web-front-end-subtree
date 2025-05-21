@@ -50,7 +50,6 @@ function scene_break() {
   echo -e "${CYN}"
   for ((i=0; i<$(tput cols); i = i + 6)); do
     echo -n "######"
-    # sleep 0.000002
   done
   echo -e "\n${RST}"
   sleep 0.2
@@ -72,6 +71,34 @@ function ensure_remote() {
     else
       play_error_tone
     fi
+  fi
+}
+
+# 📝 Check for uncommitted changes and optionally commit before continuing
+function check_and_commit_changes() {
+  if ! git diff-index --quiet HEAD --; then
+    echo -e "${YLW}⚠️  You have uncommitted changes:${RST}"
+    git status --short
+    echo -e "${YLW}Would you like to commit these changes before proceeding? (y/n)${RST}"
+    read -r answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+      read -p "Enter commit message: " commit_msg
+      git add -A
+      if git commit -m "$commit_msg"; then
+        play_success_tone
+        return 0  # proceed
+      else
+        play_error_tone
+        echo -e "${RED}❌ Commit failed. Aborting operation.${RST}"
+        return 1  # abort
+      fi
+    else
+      echo -e "${RED}❌ Operation cancelled by user.${RST}"
+      play_error_tone
+      return 1  # abort
+    fi
+  else
+    return 0  # no uncommitted changes, proceed
   fi
 }
 
@@ -97,6 +124,9 @@ function add_subtree() {
 
 # 🔁 Pull updates
 function pull_subtree() {
+  if ! check_and_commit_changes; then
+    return
+  fi
   ensure_remote
   scene_break
   typewriter "${CYN}🔄 Pulling updates from subtree...${RST}"
@@ -112,6 +142,9 @@ function pull_subtree() {
 
 # 🚀 Push updates
 function push_subtree() {
+  if ! check_and_commit_changes; then
+    return
+  fi
   ensure_remote
   scene_break
   typewriter "${CYN}🚀 Pushing subtree changes to remote...${RST}"
