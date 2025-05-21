@@ -1,7 +1,7 @@
-import IValidationError from "@/web-front-end-subtree/ValidationResponse/Data/IValidationError";
+import IValidationError from "@/ValidationResponse/Data/IValidationError";
 import IErrorResponse from "./IErrorResponse";
 import IUploadedFileResult from "./IUploadedFileResult";
-import IValidationResponse from "@/web-front-end-subtree/ValidationResponse/Data/IValidationResponse";
+import IValidationResponse from "@/ValidationResponse/Data/IValidationResponse";
 import AuthenticatedUserTracker from "@/Account/AuthenticatedUserTracker";
 import IAuthenticationResponse from "@/Authentication/Data/IAuthenticationResponse";
 
